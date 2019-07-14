@@ -20,6 +20,8 @@ apt-get update
 apt-get install --yes docker-ce docker-ce-cli containerd.io
 
 cd $WORKDIR
+rm -rf *
+
 echo "Cloning {{ repo }}"
 git clone {{ repo }} src
 echo "Clone completed"

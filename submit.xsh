@@ -25,5 +25,6 @@ for p in pathlib.Path('.').glob('*.j2'):
     out.write_text(template.render(**jinja_env))
 
 map_name = f"build-script-{name}"
+
 kubectl create configmap @(map_name) --from-file=build_script.sh
 kubectl apply -f job.yaml
