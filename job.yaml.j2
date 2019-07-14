@@ -20,16 +20,24 @@ spec:
           limits:
             memory: "2048Mi"
             cpu: "4000m"
+        env:
+          - name: WORKDIR
+            value: /opt/conda-build/{{ name }}
         volumeMounts:
           - name: dockersock
             mountPath: "/var/run/docker.sock"
           - name: build-script
             mountPath: /scripts
+          - name: workdir
+            mountPath: /opt/conda-build/{{ name }}
       restartPolicy: Never
       volumes:
         - name: dockersock
           hostPath:
             path: /var/run/docker.sock
+        - name: workdir
+          hostPath:
+            path: /opt/conda-build/{{ name }}
         - name: build-script
           configMap:
             name: build-script-{{ name }}

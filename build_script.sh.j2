@@ -19,8 +19,7 @@ add-apt-repository \
 apt-get update
 apt-get install --yes docker-ce docker-ce-cli containerd.io
 
-mkdir -p /work
-cd work
+cd $WORKDIR
 echo "Cloning {{ repo }}"
 git clone {{ repo }} src
 echo "Clone completed"
@@ -30,8 +29,9 @@ echo "Starting local build"
 ls -lah .
 python3.6 ./build-locally.py {{ config }}
 
-ls build_artifacts
-# for x in g`build_artifacts/`
-
-# cp 
-#gsutil cp build_artifacts/   gs://{{ bucket }}/
+cd build_artifacts
+for f in linux*/*.tar.bz2;
+do
+    echo "$f"
+    echo gsutil cp "$f" "gs://conda-forge-builds/${f}"
+done;
