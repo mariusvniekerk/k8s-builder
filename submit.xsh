@@ -10,12 +10,13 @@ name = '{}-{}'.format(
     str(uuid.uuid4()).split('-')[0]
     )
 bucket = 'conda-forge-builds'
+repo = 'https://github.com/conda-forge/zlib-feedstock',
 
 jinja_env = {
     "name": name,
-    "image": "ubuntu:18.04",
+    "image": "conda-forge/linux-anvil-comp7",
     "bucket": bucket,
-    "repo": 'https://github.com/conda-forge/zlib-feedstock',
+    
     "config": "linux_",
 }
 
@@ -25,6 +26,12 @@ for p in pathlib.Path('.').glob('*.j2'):
     out.write_text(template.render(**jinja_env))
 
 map_name = f"build-script-{name}"
+src_map = 
+
+rm -rf src
+git clone @(repo) src
 
 kubectl create configmap @(map_name) --from-file=build_script.sh
+kubectl create configmap f"src_{name}" --from-file=src
+
 kubectl apply -f job.yaml

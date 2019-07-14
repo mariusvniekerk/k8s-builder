@@ -10,9 +10,7 @@ spec:
         image: {{ image }}
         tty: true
         command: [
-          "bash",
-          "-c", 
-          "ls /; ls /scripts; chmod +x /scripts/build_script.sh; /scripts/build_script.sh"]
+          "bash", "/scripts/build_script.sh"]
         resources:
           requests:
             memory: "1024Mi"
@@ -21,26 +19,29 @@ spec:
             memory: "2048Mi"
             cpu: "4000m"
         env:
-          - name: WORKDIR
-            value: /mnt/stateful_partition/conda-build/{{ name }}
+          - name: FEEDSTOCK_ROOT
+            value: /src
+          - name: RECIPE_ROOT
+            value: /src/recipe
+          - name: CONFIG
+            value: {{ config }}
         volumeMounts:
-          - name: dockersock
-            mountPath: "/var/run/docker.sock"
           - name: build-script
             mountPath: /scripts
-          - name: workdir
-            mountPath: /mnt/stateful_partition/conda-build/{{ name }}
+          - name: src
+            mountPath: /src
+          - name: artifacts
+            mountPath: /src/build_artifacts
       restartPolicy: Never
       volumes:
-        - name: dockersock
-          hostPath:
-            path: /var/run/docker.sock
-        - name: workdir
-          hostPath:
-            path: /mnt/stateful_partition/conda-build/{{ name }}
         - name: build-script
           configMap:
             name: build-script-{{ name }}
             defaultMode: 0744
+        - name: src
+          configMap:
+            name: src-{{ name }}
+        - name: artifacts
+          emptyDir: {}
 
   backoffLimit: 1

@@ -2,43 +2,9 @@
 set -x
 set -e
 
-apt-get update
-apt-get install -y git python3.6 apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-
-add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
-
-apt-get update
-apt-get install --yes docker-ce docker-ce-cli containerd.io
-
-cd $WORKDIR
-rm -rf *
-
-echo "------------------"
-echo "WORKING DIRECTORY ${WORKDIR}"
-
-echo "------------------"
-echo "Cloning {{ repo }}"
-git clone {{ repo }} src
-echo "Clone completed"
-
-cd src
-echo "Starting local build"
-ls -lah .
-ls -lah .azure-pipelines
-
-echo "------------------"
-echo "Starting Build"
-
-CONFIG="{{ config }}" bash ./.azure-pipelines/run_docker_build.sh
+cd $FEEDSTOCK_ROOT
+bash $FEEDSTOCK_ROOT/.azure-pipelines/build_steps.sh
 
 cd build_artifacts
 for f in linux*/*.tar.bz2;
