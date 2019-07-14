@@ -22,6 +22,10 @@ apt-get install --yes docker-ce docker-ce-cli containerd.io
 cd $WORKDIR
 rm -rf *
 
+echo "------------------"
+echo "WORKING DIRECTORY ${WORKDIR}"
+
+echo "------------------"
 echo "Cloning {{ repo }}"
 git clone {{ repo }} src
 echo "Clone completed"
@@ -29,7 +33,12 @@ echo "Clone completed"
 cd src
 echo "Starting local build"
 ls -lah .
-python3.6 ./build-locally.py {{ config }}
+ls -lah .azure-pipelines
+
+echo "------------------"
+echo "Starting Build"
+
+CONFIG="{{ config }}" bash ./.azure-pipelines/run_docker_build.sh
 
 cd build_artifacts
 for f in linux*/*.tar.bz2;
