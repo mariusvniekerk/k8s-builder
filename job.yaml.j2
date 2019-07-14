@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: conda-builder-{{ name }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: build-image
+        image: {{ image }}
+        tty: true
+        command: [
+          "bash",
+          "-c", 
+          "ls /; ls /scripts; chmod +x /scripts/build_script.sh; /scripts/build_script.sh"]
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "1000m"
+          limits:
+            memory: "2048Mi"
+            cpu: "4000m"
+        volumeMounts:
+          - name: dockersock
+            mountPath: "/var/run/docker.sock"
+          - name: build-script
+            mountPath: /scripts
+      restartPolicy: Never
+      volumes:
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+        - name: build-script
+          configMap:
+            name: build-script-{{ name }}
+            defaultMode: 0744
+
+  backoffLimit: 1
