@@ -5,6 +5,8 @@ metadata:
 spec:
   template:
     spec:
+      securityContext:
+        runAsUser: 1000
       containers:
       - name: build-image
         image: {{ image }}
@@ -25,23 +27,25 @@ spec:
             value: /src/recipe
           - name: CONFIG
             value: {{ config }}
+          - name: HOST_USER_ID
+            value: 9001
         volumeMounts:
           - name: build-script
             mountPath: /scripts
-          - name: src
+          - name: src-archive
+            mountPath: /src_archive
+          - name: workdir
             mountPath: /src
-          - name: artifacts
-            mountPath: /src/build_artifacts
       restartPolicy: Never
       volumes:
         - name: build-script
           configMap:
             name: build-script-{{ name }}
             defaultMode: 0744
-        - name: src
+        - name: src-archive
           configMap:
             name: src-{{ name }}
-        - name: artifacts
+        - name: workdir
           emptyDir: {}
 
   backoffLimit: 1

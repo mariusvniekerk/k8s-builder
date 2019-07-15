@@ -2,9 +2,12 @@
 set -x
 set -e
 
+cd /src_archive
+tar -xvf src.tar -C $FEEDSTOCK_ROOT
+ls -lah $FEEDSTOCK_ROOT
 
-cd $FEEDSTOCK_ROOT
-bash $FEEDSTOCK_ROOT/.azure-pipelines/build_steps.sh
+/opt/docker/bin/entrypoint \
+    bash $FEEDSTOCK_ROOT/.azure-pipelines/build_steps.sh
 
 cd build_artifacts
 for f in linux*/*.tar.bz2;

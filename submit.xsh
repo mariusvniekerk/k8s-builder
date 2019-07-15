@@ -5,6 +5,8 @@ import pathlib
 import datetime
 from pathlib import Path
 
+from xonsh.lib.os import indir
+
 name = '{}-{}'.format(
     datetime.datetime.utcnow().isoformat().replace(':', '-')[:16].lower(),
     str(uuid.uuid4()).split('-')[0]
@@ -14,9 +16,8 @@ repo = 'https://github.com/conda-forge/zlib-feedstock',
 
 jinja_env = {
     "name": name,
-    "image": "conda-forge/linux-anvil-comp7",
+    "image": "condaforge/linux-anvil-comp7",
     "bucket": bucket,
-    
     "config": "linux_",
 }
 
@@ -26,12 +27,14 @@ for p in pathlib.Path('.').glob('*.j2'):
     out.write_text(template.render(**jinja_env))
 
 map_name = f"build-script-{name}"
-src_map = 
 
 rm -rf src
 git clone @(repo) src
+with indir('src'):
+    git archive HEAD -o ../src.tar
+ls .
 
 kubectl create configmap @(map_name) --from-file=build_script.sh
-kubectl create configmap f"src_{name}" --from-file=src
+kubectl create configmap f"src-{name}" --from-file=src.tar
 
 kubectl apply -f job.yaml
