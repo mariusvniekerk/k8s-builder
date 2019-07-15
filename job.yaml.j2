@@ -27,6 +27,8 @@ spec:
             value: {{ config }}
           - name: HOST_USER_ID
             value: "1000"
+          - name: UPLOAD_PACKAGES
+            value: "False"
         volumeMounts:
           - name: build-script
             mountPath: /scripts
