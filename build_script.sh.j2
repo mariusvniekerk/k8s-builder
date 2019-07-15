@@ -5,6 +5,9 @@ set -e
 cd /src_archive
 tar -xvf src.tar -C $FEEDSTOCK_ROOT
 ls -lah $FEEDSTOCK_ROOT
+set +e
+chmod --recursive a+w /src
+set -e
 
 /opt/docker/bin/entrypoint \
     bash $FEEDSTOCK_ROOT/.azure-pipelines/build_steps.sh
