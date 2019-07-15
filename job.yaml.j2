@@ -5,8 +5,6 @@ metadata:
 spec:
   template:
     spec:
-      securityContext:
-        runAsUser: 1000
       containers:
       - name: build-image
         image: {{ image }}
@@ -28,7 +26,7 @@ spec:
           - name: CONFIG
             value: {{ config }}
           - name: HOST_USER_ID
-            value: 9001
+            value: "1000"
         volumeMounts:
           - name: build-script
             mountPath: /scripts
