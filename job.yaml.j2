@@ -47,5 +47,12 @@ spec:
             name: src-{{ name }}
         - name: workdir
           emptyDir: {}
+      tolerations:
+      - key: "build-only"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "preemptible"
+        operator: "Exists"
+        effect: "NoSchedule"
 
   backoffLimit: 1

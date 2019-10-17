@@ -12,9 +12,22 @@ set -e
 /opt/docker/bin/entrypoint \
     bash $FEEDSTOCK_ROOT/.azure-pipelines/build_steps.sh
 
-cd build_artifacts
+cd "${FEEDSTOCK_ROOT}/build_artifacts"
 for f in linux*/*.tar.bz2;
 do
     echo "$f"
-    echo gsutil cp "$f" "gs://conda-forge-builds/${f}"
 done;
+
+/opt/docker/bin/entrypoint \
+    conda install -c conda-forge google-cloud-sdk --yes
+
+cd "${FEEDSTOCK_ROOT}/build_artifacts"
+for f in linux*/*.tar.bz2;
+do
+    echo "$f"
+    /opt/docker/bin/entrypoint \
+        gsutil cp "${FEEDSTOCK_ROOT}/build_artifacts/${f}" "gs://conda-metachannel-bucket/conda-forge-builds/${f}"
+done;
+
+echo "All DONE"
+exit 0
