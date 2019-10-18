@@ -2,14 +2,10 @@
 
 This will attempt to perform a build for an arbitrary feedstock on a target kubernetes cluster.
 
-Does not currently work, due to path issues it seems.
+Currently this makes a large number of assumptions about how a kubernetes cluster is configured.
 
-We need to adjust the behavior of conda-build in order for it to build inside the container
-instead of on a volume mounted thing
-
-
-The DIND behavior is super flaky and we should not use it.
-
-TODO: Refactor to just use our build containers directly
-
+TODO:
+* Add kubernetes resources showing the general shape of the cluster and its setup
+* Test GPU containers
+* Windows containers for a gold star?
 
