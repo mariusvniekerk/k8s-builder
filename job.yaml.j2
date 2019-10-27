@@ -3,6 +3,8 @@ kind: Job
 metadata:
   name: conda-builder-{{ name }}
 spec:
+  # Clean up after 7 days
+  ttlSecondsAfterFinished: {{ 60 * 60 * 24 * 7 }}
   template:
     spec:
       containers:
@@ -13,11 +15,14 @@ spec:
           "bash", "/scripts/build_script.sh"]
         resources:
           requests:
-            memory: "1024Mi"
-            cpu: "1000m"
-          limits:
-            memory: "2048Mi"
+            memory: "4G"
             cpu: "4000m"
+          limits:
+            memory: "7G"
+            cpu: "8000m"
+            {%- if "linux-anvil-cuda" in 'image' %}
+            nvidia.com/gpu: 1
+            {%- endif %}
         env:
           - name: FEEDSTOCK_ROOT
             value: /src
@@ -48,11 +53,10 @@ spec:
         - name: workdir
           emptyDir: {}
       tolerations:
-      - key: "build-only"
+      {%- for toleration in tolerations %}
+      - key: {{ toleration.key }}
         operator: "Exists"
         effect: "NoSchedule"
-      - key: "preemptible"
-        operator: "Exists"
-        effect: "NoSchedule"
+      {% endfor %}
 
   backoffLimit: 1

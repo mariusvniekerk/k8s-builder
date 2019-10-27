@@ -1,5 +1,4 @@
 *.sh
-*.yml
 *.yaml
 *.tar
 src/
