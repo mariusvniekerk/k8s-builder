@@ -11,8 +11,9 @@ spec:
       - name: build-image
         image: {{ image }}
         tty: true
-        command: [
-          "bash", "/scripts/build_script.sh"]
+        command: 
+          - bash
+          - /scripts/build_script.sh
         resources:
           requests:
             memory: "4G"
@@ -20,7 +21,7 @@ spec:
           limits:
             memory: "6G"
             cpu: "4000m"
-            {%- if "linux-anvil-cuda" in 'image' %}
+            {%- if "linux-anvil-cuda" in image %}
             nvidia.com/gpu: 1
             {%- endif %}
         env:
