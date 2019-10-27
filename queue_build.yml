@@ -1,0 +1,61 @@
+---
+- name: Enqueue a build on k8s
+  hosts: localhost
+
+  tasks:
+    - set_fact:
+        repo: "https://github.com/conda-forge/zlib-feedstock"
+        repo_revision: "master"
+
+    - name: clone the repo
+      git:
+        repo: "{{ repo }}"
+        dest: ./src
+        version: "{{ repo_revision }}"
+
+    - name: Find configs
+      find:
+        paths: ./src/.ci_support
+        patterns: '*.yaml'
+      register: configs
+
+    # TODO: Filter out non-linux
+    - name: reformat configs
+      set_fact: 
+        config_files: "{{ configs.files | map(attribute='path') | list }}"
+
+    - name: extract config_names
+      set_fact: 
+        config_names: " {{ config_files | map('basename') | map('splitext') | map('first') | list }}"
+
+    - name: print configs
+      debug:
+          var: config_files # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
+
+    - name: print config_names
+      debug:
+          var: config_names # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
+
+    - pause:
+        prompt: "Select a config to build for: "
+        echo: yes
+      register: config_input
+    
+    - name: print configs
+      debug:
+          var: config_input # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
+
+    - set_fact:
+        config: "{{ config_input.user_input }}"
+      when: "{{ config_input.user_input in config_names }}"
+
+    - set_fact:
+        config_vars: "{{ lookup('file', './src/.ci_support/{{ config }}.yaml' ) |from_yaml }}"
+
+    - name: print configs
+      debug:
+          var: config_vars # not required. A variable name to debug.  Mutually exclusive with the 'msg' option.
+
+    - set_fact:
+        docker_image: "{{ config_vars.docker_image | first | default('condaforge/linux-anvil-comp7') }}"
+

@@ -16,10 +16,10 @@ spec:
         resources:
           requests:
             memory: "4G"
-            cpu: "4000m"
+            cpu: "2000m"
           limits:
-            memory: "7G"
-            cpu: "8000m"
+            memory: "6G"
+            cpu: "4000m"
             {%- if "linux-anvil-cuda" in 'image' %}
             nvidia.com/gpu: 1
             {%- endif %}
